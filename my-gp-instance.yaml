@@ -1,0 +1,30 @@
+apiVersion: "greenplum.pivotal.io/v1"
+kind: "GreenplumCluster"
+metadata:
+  name: my-greenplum
+spec:
+  masterAndStandby:
+    standby: "yes"
+    hostBasedAuthentication: |
+      # host   all   gpadmin   1.2.3.4/32   trust
+      # host   all   gpuser    0.0.0.0/0   md5
+    memory: "800Mi"
+    cpu: "0.5"
+    storage: 1G
+    storageClassName: local-storage
+    volumeMounts:
+      - mountPath: "/extra_disk01/gpdb-vol01"
+        name: greenplum-pv-storage
+    antiAffinity: "no"
+  segments:
+    primarySegmentCount: 1
+    memory: "800Mi"
+    cpu: "0.5"
+    storage: 1G
+    storageClassName: local-storage
+    antiAffinity: "no"
+    mirros: yes
+  volumes:
+    - name: greenplum-pv-storage
+      persistentVolumeClaim:
+        claimName: greenplum-local-claim

@@ -1,4 +1,4 @@
-How to install greenplum on minikube
+How to install greenplum on minikube with CentOS 7
 
 #…or create a new repository on the command line
 #echo "# gpdb-for-k8s" >> README.md
@@ -12,3 +12,4 @@ How to install greenplum on minikube
 #git push -u origin master
 #…or import code from another repository
 #You can initialize this repository with code from a Subversion, Mercurial, or TFS project.
+

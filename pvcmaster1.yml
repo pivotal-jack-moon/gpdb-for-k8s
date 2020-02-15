@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+  creationTimestamp: "2020-02-11T07:09:21Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app: greenplum
+    greenplum-cluster: my-greenplum
+    type: master
+  name: my-greenplum-pgdata-master-1
+  namespace: default
+  resourceVersion: "264235"
+  selfLink: /api/v1/namespaces/default/persistentvolumeclaims/my-greenplum-pgdata-master-1
+  uid: 81410dce-bc6a-4c19-8edb-aa02b996d1d5
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    limits:
+      storage: 1G
+    requests:
+      storage: 1G
+  storageClassName: local-storage
+  volumeMode: Filesystem
+  volumeName: greenplum-local-pv-master-1
+status:
+  accessModes:
+  - ReadWriteOnce
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  phase: Bound

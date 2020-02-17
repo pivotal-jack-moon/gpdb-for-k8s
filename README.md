@@ -1,6 +1,6 @@
 ## How to install and configure GPDB for kubenetes onto minikube in CentOS 7.x
 
-### Insgtall KVM Hypervisor supported and docker for minikube
+#### Install KVM Hypervisor supported and docker for minikube
 ~~~
 [root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm docker epel-release
 [root@gpdb-k8s ~]# systemctl start libvirtd docker
@@ -173,7 +173,7 @@ logout
 ### Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
 
 
-### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
+### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software.
 ~~~
 $ cd ~/Downloads
 ~~~

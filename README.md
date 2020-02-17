@@ -2,7 +2,7 @@
 
 ### Insgtall KVM Hypervisor supported and docker for minikube
 ~~~
-[root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm docker
+[root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm docker epel-release
 [root@gpdb-k8s ~]# systemctl start libvirtd docker
 [root@gpdb-k8s ~]# systemctl enable libvirtd docker
 ~~~
@@ -170,11 +170,8 @@ $ exit
 logout
 ~~~
 
+# Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
 
-~~~
-Follow these steps to download and install the Greenplum for Kubernetes container images, and install the Greenplum Operator resource.
-Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
-~~~
 
 ### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
 ~~~
@@ -187,27 +184,7 @@ $ cd ~/Downloads
 greenplum-for-kubernetes-v1.11.0/
 greenplum-for-kubernetes-v1.11.0/workspace/
 greenplum-for-kubernetes-v1.11.0/workspace/my-gp-instance.yaml
-greenplum-for-kubernetes-v1.11.0/workspace/samples/
-greenplum-for-kubernetes-v1.11.0/workspace/samples/my-gp-with-gptext-instance.yaml
-greenplum-for-kubernetes-v1.11.0/workspace/samples/my-gp-with-pxf-instance.yaml
-greenplum-for-kubernetes-v1.11.0/workspace/samples/scripts/
-greenplum-for-kubernetes-v1.11.0/workspace/samples/scripts/create_disks.bash
-greenplum-for-kubernetes-v1.11.0/workspace/samples/scripts/create_pks_cluster_on_gcp.bash
-greenplum-for-kubernetes-v1.11.0/workspace/samples/scripts/regsecret-test.bash
-greenplum-for-kubernetes-v1.11.0/workspace/samples/scripts/regsecret-test.yaml
-greenplum-for-kubernetes-v1.11.0/README.txt
-greenplum-for-kubernetes-v1.11.0/images/
-greenplum-for-kubernetes-v1.11.0/images/greenplum-for-kubernetes
-greenplum-for-kubernetes-v1.11.0/images/greenplum-for-kubernetes-id
-greenplum-for-kubernetes-v1.11.0/images/greenplum-for-kubernetes-tag
-greenplum-for-kubernetes-v1.11.0/images/greenplum-operator
-greenplum-for-kubernetes-v1.11.0/images/greenplum-operator-id
-greenplum-for-kubernetes-v1.11.0/images/greenplum-operator-tag
-greenplum-for-kubernetes-v1.11.0/operator/
-greenplum-for-kubernetes-v1.11.0/operator/templates/
-greenplum-for-kubernetes-v1.11.0/operator/templates/NOTES.txt
-greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator-cluster-role-binding.yaml
-greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator-cluster-role.yaml
+~~ snip
 greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator-crds.yaml
 greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator-service-account.yaml
 greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator.yaml
@@ -217,72 +194,47 @@ greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
 
 ### Go into the new greenplum-for-kubernetes-<version> directory:
 ~~~
-$ cd ./greenplum-for-kubernetes-*
+[jomoon@gpdb-k8s Downloads]$ cd ./greenplum-for-kubernetes-*
 ~~~
 
-
 ~~~
-(This step is for Minikube deployments only.) Ensure that the local docker daemon interacts with the Minikube docker container registry:
-
+### Ensure that the local docker daemon interacts with the Minikube docker container registry:
+~~~
 $ eval $(minikube docker-env)
+~~~
 Note: To undo this docker setting in the current shell, run eval "$(docker-machine env -u)".
+
+
+### Load the Greenplum for Kubernetes Docker image to the local Docker registry:
+~~~
+[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-for-kubernetes
+91d23cf5425a: Loading layer 127.3 MB/127.3 MB
+f36b28e4310d: Loading layer 11.78 kB/11.78 kB
+~~ snip
+77008e118980: Loading layer 3.072 kB/3.072 kB
+90e77a00f3d6: Loading layer 14.96 MB/14.96 MB
+91dd5e4c1a07: Loading layer 144.9 kB/144.9 kB
+Loaded image: greenplum-for-kubernetes:v1.11.0
 ~~~
 
-### Install epel-release
+### Load the Greenplum Operator Docker image to the Docker registry:
 ~~~
-[jomoon@gpdb-k8s ~]# sudo yum install epel-release
-Loaded plugins: fastestmirror
-Loading mirror speeds from cached hostfile
- * epel: ftp.riken.jp
-Resolving Dependencies
---> Running transaction check
----> Package epel-release.noarch 0:7-11 will be updated
----> Package epel-release.noarch 0:7-12 will be an update
---> Finished Dependency Resolution
-
-Dependencies Resolved
-
-============================================================================================
- Package                   Arch                Version              Repository         Size
-============================================================================================
-Updating:
- epel-release              noarch              7-12                 epel               15 k
-
-Transaction Summary
-============================================================================================
-Upgrade  1 Package
-
-Total download size: 15 k
-Is this ok [y/d/N]: y
-Downloading packages:
-Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
-warning: /var/cache/yum/x86_64/7/epel/packages/epel-release-7-12.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID 352c64e5: NOKEY
-Public key for epel-release-7-12.noarch.rpm is not installed
-epel-release-7-12.noarch.rpm                                         |  15 kB  00:00:01
-Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-Importing GPG key 0x352C64E5:
- Userid     : "Fedora EPEL (7) <epel@fedoraproject.org>"
- Fingerprint: 91e9 7d7c 4a5e 96f1 7f3e 888f 6a2f aea2 352c 64e5
- Package    : epel-release-7-11.noarch (installed)
- From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-Is this ok [y/N]: y
-Running transaction check
-Running transaction test
-Transaction test succeeded
-Running transaction
-  Updating   : epel-release-7-12.noarch                                                 1/2
-  Cleanup    : epel-release-7-11.noarch                                                 2/2
-  Verifying  : epel-release-7-12.noarch                                                 1/2
-  Verifying  : epel-release-7-11.noarch                                                 2/2
-
-Updated:
-  epel-release.noarch 0:7-12
-
-Complete!
+[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-operator
+33c58014b5a4: Loading layer  65.5 MB/65.5 MB
+a1eabe7eb601: Loading layer 40.65 MB/40.65 MB
+511680a9987d: Loading layer 41.01 MB/41.01 MB
+Loaded image: greenplum-operator:v1.11.0
 ~~~
 
+### Verify that both Docker images are now available:
+~~~
+[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker images "greenplum-*"
+REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
+greenplum-operator         v1.11.0             852cafa7ac90        7 weeks ago         269 MB
+greenplum-for-kubernetes   v1.11.0             3819d17a577a        7 weeks ago         3.05 GB
+~~~
 
-
+### Install helm
 ~~~
 [jomoon@gpdb-k8s ~]$ curl -L https://git.io/get_helm.sh | bash
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -296,7 +248,7 @@ tiller installed into /usr/local/bin/tiller
 Run 'helm init' to configure helm.
 ~~~
 
-
+### Initialize helm
 ~~~
 [jomoon@gpdb-k8s ~]$ helm init
 Creating /home/jomoon/.helm
@@ -318,78 +270,7 @@ To prevent this, run `helm init` with the --tiller-tls-verify flag.
 For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
 ~~~
 
-
-
-
-
-
-~~~
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-for-kubernetes
-91d23cf5425a: Loading layer 127.3 MB/127.3 MB
-f36b28e4310d: Loading layer 11.78 kB/11.78 kB
-6cb741cb00b7: Loading layer 15.87 kB/15.87 kB
-77008e118980: Loading layer 3.072 kB/3.072 kB
-f0445255831e: Loading layer 114.7 MB/114.7 MB
-944eb3f9077b: Loading layer 11.31 MB/11.31 MB
-64e4d7ef040b: Loading layer 7.226 MB/7.226 MB
-a2be1c7a4392: Loading layer 715.3 MB/715.3 MB
-678fcb7fdf71: Loading layer 89.92 MB/89.92 MB
-e1dfb6491764: Loading layer 109.2 MB/109.2 MB
-7390094292fc: Loading layer 67.54 MB/67.54 MB
-5561f17afe06: Loading layer 67.54 MB/67.54 MB
-a20084de55a7: Loading layer 396.5 MB/396.5 MB
-dc0ec19f2c73: Loading layer 255.5 MB/255.5 MB
-a130aac90df7: Loading layer 61.24 MB/61.24 MB
-dca20834a22f: Loading layer  2.56 kB/2.56 kB
-3bec381707b4: Loading layer 3.072 kB/3.072 kB
-3ad5e45f3991: Loading layer 109.4 MB/109.4 MB
-a93105f10deb: Loading layer  2.56 kB/2.56 kB
-ba6c1a75cbeb: Loading layer 3.584 kB/3.584 kB
-f65a541dfb28: Loading layer   231 MB/231 MB
-cf04b31982f8: Loading layer 713.3 MB/713.3 MB
-9f777124eb0d: Loading layer 1.629 MB/1.629 MB
-df26ab3c8bda: Loading layer  2.56 kB/2.56 kB
-90e77a00f3d6: Loading layer 14.96 MB/14.96 MB
-91dd5e4c1a07: Loading layer 144.9 kB/144.9 kB
-Loaded image: greenplum-for-kubernetes:v1.11.0
-~~~
-
-
-
-
-~~~
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-operator
-33c58014b5a4: Loading layer  65.5 MB/65.5 MB
-a1eabe7eb601: Loading layer 40.65 MB/40.65 MB
-511680a9987d: Loading layer 41.01 MB/41.01 MB
-Loaded image: greenplum-operator:v1.11.0
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker images "greenplum-*"
-REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
-greenplum-operator         v1.11.0             852cafa7ac90        7 weeks ago         269 MB
-greenplum-for-kubernetes   v1.11.0             3819d17a577a        7 weeks ago         3.05 GB
-~~~
-
-
-
-~~~
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
-Error: This command needs 1 argument: chart name
---> helm 3.0.3 버전 업그레이드 이후에 해결됨
-~~~
-
-
-
-Every release of Helm provides binary releases for a variety of OSes. These binary versions can be manually downloaded and installed.
-
-Download your desired version
-Unpack it (tar -zxvf helm-v3.0.0-linux-amd64.tar.gz)
-Find the helm binary in the unpacked directory, and move it to its desired destination (mv linux-amd64/helm /usr/local/bin/helm)
-From there, you should be able to run the client and add the stable repo: helm help.
-
-~~~
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ eval $(minikube docker-env)
-~~~
-
+### Use helm to create a new Greenplum Operator release
 ~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
 NAME: greenplum-operator
@@ -405,9 +286,15 @@ Please see documentation at:
 http://greenplum-kubernetes.docs.pivotal.io/
 ~~~
 
-
+### If you face the following error while running helm install, download, unpack and install the latest version helm ( currently v3.0.3 )
 ~~~
-$ kubectl get all
+[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
+Error: This command needs 1 argument: chart name
+~~~
+
+### Use watch kubectl get all to monitor the progress of the deployment.
+~~~
+$ watch kubectl get all
 NAME                                      READY   STATUS    RESTARTS   AGE
 pod/greenplum-operator-667ccc59fd-59pxt   1/1     Running   0          3m22s
 
@@ -422,8 +309,7 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/greenplum-operator-667ccc59fd   1         1         1       3m22s
 ~~~
 
-
-
+### Check the logs of the operator to ensure that it is running properly.
 ~~~
 $ kubectl logs -l app=greenplum-operator
 time="2020-02-13T05:53:29Z" level=info msg="started workers"
@@ -438,7 +324,7 @@ time="2020-02-13T05:53:29Z" level=info msg="started workers"
 2020-02-13T05:53:29.853Z	INFO	controller-runtime.controller	Starting workers	{"controller": "greenplumpxfservice", "worker count": 1}
 ~~~
 
-
+### Create the StorageClass definition, specifying no-provisioner in order to manually provision local persistent volumes.
 ~~~
 $ vi storage-class.yaml
 ---
@@ -450,11 +336,13 @@ provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 ~~~
 
+### Apply the StorageClass
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f storage-class.yaml
 storageclass.storage.k8s.io/local-storage created
 ~~~
 
+### Create the PersistentVolumeClaim
 ~~~
 [jomoon@gpdb-k8s workspace]$ vi gpdb-storage-claim.yaml
 ---
@@ -471,10 +359,12 @@ spec:
       storage: 10Gi
 ~~~
 
+### Apply the PersistentVolumeClaim
 ~~~
-[jomoon@gpdb-k8s workspace]$  kubectl apply -f gpdb-storage-claim.yaml
+[jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-storage-claim.yaml
 ~~~
 
+### Create a PersistentVolume definition, specifying the local volume and the required NodeAffinity field.
 ~~~
 [jomoon@gpdb-k8s workspace]$ vi gpdb-persistent-storage-for-minikube.yaml
 ---
@@ -571,6 +461,7 @@ spec:
           - minikube
 ~~~
 
+### Apply the PersistentVolume
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-persistent-storage-for-minikube.yaml
 persistentvolume/greenplum-local-pv-master-0 created

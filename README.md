@@ -138,6 +138,8 @@ KubeDNS is running at https://192.168.39.130:8443/api/v1/namespaces/kube-system/
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ~~~
+
+~~~
 [jomoon@gpdb-k8s ~]$ kubectl get nodes
 NAME       STATUS   ROLES    AGE   VERSION
 minikube   Ready    master   71m   v1.17.2

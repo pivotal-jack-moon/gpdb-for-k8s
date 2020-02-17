@@ -1,13 +1,14 @@
-How to install and configure greenplum for kubenetest onto minikube in CentOS 7.x
+# How to install and configure greenplum for kubenetest onto minikube in CentOS 7.x
+
+~~~
+[root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm
+[root@gpdb-k8s ~]# systemctl start libvirtd
+[root@gpdb-k8s ~]# systemctl enable libvirtd
+~~~
 
 
-[root@dlp ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm
-[root@dlp ~]# systemctl start libvirtd
-[root@dlp ~]# systemctl enable libvirtd
-
-
-
-[root@dlp ~]# cat <<'EOF' > /etc/yum.repos.d/kubernetes.repo
+~~~
+[root@gpdb-k8s ~]# cat <<'EOF' > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
@@ -16,25 +17,24 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
+~~~
 
 
+~~~
+[root@gpdb-k8s ~]# yum -y install kubectl
+[root@gpdb-k8s ~]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -O minikube
+[root@gpdb-k8s ~]# wget https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
+[root@gpdb-k8s ~]# chmod 755 minikube docker-machine-driver-kvm2
+[root@gpdb-k8s ~]# mv minikube docker-machine-driver-kvm2 /usr/local/bin/
+~~~
 
 
-[root@dlp ~]# yum -y install kubectl
-[root@dlp ~]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -O minikube
-[root@dlp ~]# wget https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
-[root@dlp ~]# chmod 755 minikube docker-machine-driver-kvm2
-[root@dlp ~]# mv minikube docker-machine-driver-kvm2 /usr/local/bin/
-
-
-
+~~~
 [root@gpdb-k8s ~]# minikube version
 minikube version: v1.7.2
 commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
-
-[root@gpdb-k8s ~]#
-[root@gpdb-k8s ~]#
-[root@gpdb-k8s ~]#
+~~~
+~~~
 [root@gpdb-k8s ~]# kubectl version -o json
 {
   "clientVersion": {
@@ -51,22 +51,7 @@ commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 }
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
 
-
-
-[root@gpdb-k8s ~]# minikube start --vm-driver kvm2
-😄  minikube v1.7.2 on Centos 7.5.1804
-✨  Using the kvm2 driver based on user configuration
-🛑  The "kvm2" driver should not be used with root privileges.
-💡  If you are running minikube within a VM, consider using --vm-driver=none:
-📘    https://minikube.sigs.k8s.io/docs/reference/drivers/none/
-
-
-
-[root@gpdb-k8s ~]#
-[root@gpdb-k8s ~]#
-[root@gpdb-k8s ~]#
-[root@gpdb-k8s ~]# su - jmoon
-su: user jmoon does not exist
+~~~
 [root@gpdb-k8s ~]# sudo su - jomoon
 Last login: Thu Feb 13 11:31:16 KST 2020 on pts/0
 [jomoon@gpdb-k8s ~]$
@@ -90,7 +75,7 @@ error: authentication unavailable: no polkit agent available to authenticate act
 ❌  Error: [KVM_CONNECTION_ERROR] create: Error creating machine: Error in driver during machine creation: creating network: getting libvirt connection: error connecting to libvirt socket.: virError(Code=94, Domain=60, Message='authentication unavailable: no polkit agent available to authenticate action 'org.libvirt.unix.manage'')
 💡  Suggestion: Have you set up libvirt correctly?
 📘  Documentation: https://minikube.sigs.k8s.io/docs/reference/drivers/kvm2/
-
+~~~
 
 
 --------------
@@ -104,9 +89,11 @@ So just add your user to the libvirt group and enjoy passwordless virt-manager u
 
 --------------
 
+~~~
 [jomoon@gpdb-k8s ~]$ sudo usermod --append --groups libvirt $(whoami)
+~~~
 
-
+~~~
 [jomoon@gpdb-k8s ~]$ minikube start --vm-driver kvm2
 😄  minikube v1.7.2 on Centos 7.5.1804
 ✨  Using the kvm2 driver based on user configuration
@@ -131,8 +118,9 @@ So just add your user to the libvirt group and enjoy passwordless virt-manager u
 🌟  Enabling addons: default-storageclass, storage-provisioner
 ⌛  Waiting for cluster to come online ...
 🏄  Done! kubectl is now configured to use "minikube"
+~~~
 
-
+~~~
 [jomoon@gpdb-k8s ~]$ minikube status
 host: Running
 kubelet: Running
@@ -146,14 +134,15 @@ kubeconfig: Configured
 | default     | kubernetes | No node port |
 | kube-system | kube-dns   | No node port |
 |-------------|------------|--------------|-----|
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$
+~~~
+
+~~~
 [jomoon@gpdb-k8s ~]$ minikube docker-env
 export DOCKER_TLS_VERIFY="1"
 export DOCKER_HOST="tcp://192.168.39.130:2376"
 export DOCKER_CERT_PATH="/home/jomoon/.minikube/certs"
 export MINIKUBE_ACTIVE_DOCKERD="minikube"
+~~~
 
 # To point your shell to minikube's docker-daemon, run:
 # eval $(minikube -p minikube docker-env)
@@ -162,26 +151,20 @@ Kubernetes master is running at https://192.168.39.130:8443
 KubeDNS is running at https://192.168.39.130:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$
+~~~
 [jomoon@gpdb-k8s ~]$ kubectl get nodes
 NAME       STATUS   ROLES    AGE   VERSION
 minikube   Ready    master   71m   v1.17.2
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$ virsh list
- Id    Name                           State
-----------------------------------------------------
+~~~
 
-[jomoon@gpdb-k8s ~]$ virsh list --all
- Id    Name                           State
-----------------------------------------------------
-
+~~~
 [jomoon@gpdb-k8s ~]$ sudo virsh list --all
  Id    Name                           State
 ----------------------------------------------------
  1     minikube                       running
+~~~
 
+~~~
 [jomoon@gpdb-k8s ~]$ minikube ssh
                          _             _
             _         _ ( )           ( )
@@ -212,21 +195,17 @@ efb7f738fdf9        303ce5db0e90           "etcd --advertise-cl…"   About an h
 eaaff187cf2b        k8s.gcr.io/pause:3.1   "/pause"                 About an hour ago   Up About an hour                        k8s_POD_etcd-minikube_kube-system_258d78c784be89181916767a7391b680_0
 $ exit
 logout
-
+~~~
 
 
 
 Follow these steps to download and install the Greenplum for Kubernetes container images, and install the Greenplum Operator resource.
-
 Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
-
 Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
-
 $ cd ~/Downloads
 
 
-
-
+~~~
 [jomoon@gpdb-k8s Downloads]$ tar xvzf greenplum-for-kubernetes-v1.11.0.tar.gz
 greenplum-for-kubernetes-v1.11.0/
 greenplum-for-kubernetes-v1.11.0/workspace/
@@ -257,14 +236,14 @@ greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator-service-a
 greenplum-for-kubernetes-v1.11.0/operator/templates/greenplum-operator.yaml
 greenplum-for-kubernetes-v1.11.0/operator/values.yaml
 greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
-
+~~~
 
 
 
 Go into the new greenplum-for-kubernetes-<version> directory:
-
+~~~
 $ cd ./greenplum-for-kubernetes-*
-
+~~~
 
 
 (This step is for Minikube deployments only.) Ensure that the local docker daemon interacts with the Minikube docker container registry:
@@ -273,8 +252,8 @@ $ eval $(minikube docker-env)
 Note: To undo this docker setting in the current shell, run eval "$(docker-machine env -u)".
 
 
-
-[root@gpdb-k8s ~]# yum install epel-release
+~~~
+[jomoon@gpdb-k8s ~]# sudo yum install epel-release
 Loaded plugins: fastestmirror
 Loading mirror speeds from cached hostfile
  * epel: ftp.riken.jp
@@ -323,10 +302,10 @@ Updated:
   epel-release.noarch 0:7-12
 
 Complete!
+~~~
 
 
-
-$ yum install docker
+[jomoon@gpdb-k8s ~]# sudo yum install docker
 
 
 
@@ -368,7 +347,7 @@ For more information on securing your installation see: https://docs.helm.sh/usi
 
 
 
-
+~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-for-kubernetes
 91d23cf5425a: Loading layer 127.3 MB/127.3 MB
 f36b28e4310d: Loading layer 11.78 kB/11.78 kB
@@ -397,12 +376,12 @@ df26ab3c8bda: Loading layer  2.56 kB/2.56 kB
 90e77a00f3d6: Loading layer 14.96 MB/14.96 MB
 91dd5e4c1a07: Loading layer 144.9 kB/144.9 kB
 Loaded image: greenplum-for-kubernetes:v1.11.0
+~~~
 
 
 
 
-
-
+~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-operator
 33c58014b5a4: Loading layer  65.5 MB/65.5 MB
 a1eabe7eb601: Loading layer 40.65 MB/40.65 MB
@@ -412,10 +391,10 @@ Loaded image: greenplum-operator:v1.11.0
 REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
 greenplum-operator         v1.11.0             852cafa7ac90        7 weeks ago         269 MB
 greenplum-for-kubernetes   v1.11.0             3819d17a577a        7 weeks ago         3.05 GB
+~~~
 
 
-
-
+~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
 -bash: helm: command not found
 
@@ -437,12 +416,12 @@ Unpack it (tar -zxvf helm-v3.0.0-linux-amd64.tar.gz)
 Find the helm binary in the unpacked directory, and move it to its desired destination (mv linux-amd64/helm /usr/local/bin/helm)
 From there, you should be able to run the client and add the stable repo: helm help.
 
+~~~
+[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ eval $(minikube docker-env)
+~~~
 
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ !115
-eval $(minikube docker-env)
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ !143
-helm install greenplum-operator operator/
+~~~
+[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
 NAME: greenplum-operator
 LAST DEPLOYED: Thu Feb 13 14:53:23 2020
 NAMESPACE: default
@@ -454,11 +433,10 @@ greenplum-operator has been installed.
 
 Please see documentation at:
 http://greenplum-kubernetes.docs.pivotal.io/
+~~~
 
 
-
-
-
+~~~
 $ kubectl get all
 NAME                                      READY   STATUS    RESTARTS   AGE
 pod/greenplum-operator-667ccc59fd-59pxt   1/1     Running   0          3m22s
@@ -472,11 +450,11 @@ deployment.apps/greenplum-operator   1/1     1            1           3m22s
 
 NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/greenplum-operator-667ccc59fd   1         1         1       3m22s
+~~~
 
 
 
-
-
+~~~
 $ kubectl logs -l app=greenplum-operator
 time="2020-02-13T05:53:29Z" level=info msg="started workers"
 2020-02-13T05:53:29.649Z	INFO	controller-runtime.metrics	metrics server is starting to listen	{"addr": ":8080"}
@@ -488,14 +466,11 @@ time="2020-02-13T05:53:29Z" level=info msg="started workers"
 2020-02-13T05:53:29.752Z	INFO	controller-runtime.controller	Starting Controller	{"controller": "greenplumpxfservice"}
 2020-02-13T05:53:29.853Z	INFO	controller-runtime.controller	Starting workers	{"controller": "greenplumtextservice", "worker count": 1}
 2020-02-13T05:53:29.853Z	INFO	controller-runtime.controller	Starting workers	{"controller": "greenplumpxfservice", "worker count": 1}
+~~~
 
 
-
-
-
-
-
-$ cat storage-class.yaml
+~~~
+$ vi storage-class.yaml
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -503,20 +478,15 @@ metadata:
   name: local-storage
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+~~~
 
-
+~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f storage-class.yaml
 storageclass.storage.k8s.io/local-storage created
-[jomoon@gpdb-k8s workspace]$
-[jomoon@gpdb-k8s workspace]$
+~~~
 
-
-
-$ kubectl apply -f storage-class.yaml
-
-
-
-[jomoon@gpdb-k8s workspace]$ cat gpdb-storage-claim.yaml
+~~~
+[jomoon@gpdb-k8s workspace]$ vi gpdb-storage-claim.yaml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -529,12 +499,14 @@ spec:
   resources:
     requests:
       storage: 10Gi
+~~~
 
+~~~
+[jomoon@gpdb-k8s workspace]$  kubectl apply -f gpdb-storage-claim.yaml
+~~~
 
-$ kubectl apply -f gpdb-storage-claim.yaml
-
-
-[jomoon@gpdb-k8s workspace]$ cat pvmaster0.yml pvmaster1.yml pvsegment-a-0.yml pvsegment-b-0.yml
+~~~
+[jomoon@gpdb-k8s workspace]$ vi gpdb-persistent-storage-for-minikube.yaml
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -627,24 +599,19 @@ spec:
           operator: In
           values:
           - minikube
+~~~
 
-
-
-
-
-[jomoon@gpdb-k8s workspace]$ kubectl apply -f pvmaster0.yml
+~~~
+[jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-persistent-storage-for-minikube.yaml
 persistentvolume/greenplum-local-pv-master-0 created
-[jomoon@gpdb-k8s workspace]$ kubectl apply -f pvmaster1.yml
 persistentvolume/greenplum-local-pv-master-1 created
-[jomoon@gpdb-k8s workspace]$ kubectl apply -f pvsegment-a-0.yml
 persistentvolume/greenplum-local-pv-segment-a-0 created
-[jomoon@gpdb-k8s workspace]$
-[jomoon@gpdb-k8s workspace]$ kubectl apply -f pvsegment-b-0.yml
 persistentvolume/greenplum-local-pv-segment-b-0 created
+~~~
 
 
 
-
+~~~
 [jomoon@gpdb-k8s workspace]$ minikube ssh
                          _             _
             _         _ ( )           ( )
@@ -653,16 +620,17 @@ persistentvolume/greenplum-local-pv-segment-b-0 created
 | ( ) ( ) || || ( ) || || |\`\ | (_) || |_) )(  ___/
 (_) (_) (_)(_)(_) (_)(_)(_) (_)`\___/'(_,__/'`\____)
 
-$
 $ sudo mkdir -p /extra_disk01/greenplum-local-pv-segment-b-0
 $ sudo mkdir -p /extra_disk01/greenplum-local-pv-segment-a-0
 $ sudo mkdir -p /extra_disk01/greenplum-local-pv-master-0
 $ sudo mkdir -p /extra_disk01/greenplum-local-pv-master-1
 $ exit
 logout
+~~~
 
 
-[jomoon@gpdb-k8s workspace]$ cat my-gp-instance.yaml
+~~~
+[jomoon@gpdb-k8s workspace]$ vi gpdb-instances.yaml
 apiVersion: "greenplum.pivotal.io/v1"
 kind: "GreenplumCluster"
 metadata:
@@ -686,11 +654,14 @@ spec:
     storageClassName: local-storage
     antiAffinity: "no"
     mirros: yes
+~~~
+
+~~~
+[jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-instances.yaml
+~~~
 
 
-$ kubectl apply -f my-gp-instance.yaml
-
-
+~~~
 [jomoon@gpdb-k8s workspace]$ kubectl get all
 NAME                                      READY   STATUS    RESTARTS   AGE
 pod/greenplum-operator-667ccc59fd-txh9v   1/1     Running   0          14m
@@ -718,12 +689,9 @@ statefulset.apps/segment-b   1/1     25s
 
 NAME                                                 STATUS    AGE
 greenplumcluster.greenplum.pivotal.io/my-greenplum   Pending   30s
+~~~
 
-
-
-
-
-
+~~~
 [jomoon@gpdb-k8s workspace]$ kubectl describe greenplumClusters/my-greenplum
 Name:         my-greenplum
 Namespace:    default
@@ -764,11 +732,11 @@ Status:
   Operator Version:  greenplum-operator:v1.11.0
   Phase:             Pending
 Events:              <none>
+~~~
 
 
 
-
-
+~~~
 [jomoon@gpdb-k8s workspace]$ kubectl exec -it master-0 bash
 
 gpadmin@master-0:~$ source /opt/gpdb/greenplum_path.sh
@@ -835,12 +803,5 @@ gpadmin=# select * from gp_segment_configuration;
     2 |       0 | m    | p              | s    | d      | 40000 | segment-a-0                              | segment-a-0.agent.default.svc.cluster.local |             6000
     3 |       0 | p    | m              | c    | u      | 50000 | segment-b-0                              | segment-b-0.agent.default.svc.cluster.local |             6001
 (4 rows)
-
-
-
-
-
-
-
-
+~~~
 

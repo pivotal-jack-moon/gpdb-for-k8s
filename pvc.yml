@@ -1,5 +1,0 @@
-greenplum-local-claim             Pending                                                  local-storage   41m
-my-greenplum-pgdata-master-0      Bound     greenplum-local-pv   10Gi       RWO,RWX        local-storage   41m
-my-greenplum-pgdata-master-1      Pending                                                  local-storage   41m
-my-greenplum-pgdata-segment-a-0   Pending                                                  local-storage   41m
-my-greenplum-pgdata-segment-b-0   Pending

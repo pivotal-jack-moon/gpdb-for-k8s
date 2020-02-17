@@ -71,7 +71,7 @@ error: authentication unavailable: no polkit agent available to authenticate act
 📘  Documentation: https://minikube.sigs.k8s.io/docs/reference/drivers/kvm2/
 
 💿  Downloading VM boot image ...
-    > minikube-v1.7.0.iso.sha256: 65 B / 65 B [--------------] 100.00% ? p/s 0s
+    > minikube-v1.7.0.iso.sha256: 65 B / 65 B [\--------------] 100.00% ? p/s 0s
     > minikube-v1.7.0.iso: 166.68 MiB / 166.68 MiB [-] 100.00% 3.71 MiB p/s 45s
 🔥  Creating kvm2 VM (CPUs=2, Memory=2000MB, Disk=20000MB) ...
 
@@ -147,7 +147,7 @@ minikube   Ready    master   71m   v1.17.2
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo virsh list --all
  Id    Name                           State
-----------------------------------------------------
+\----------------------------------------------------
  1     minikube                       running
 ~~~
 

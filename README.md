@@ -20,7 +20,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 ~~~
 
-Install kubectl and minikube
+### Install kubectl and minikube
 ~~~
 [root@gpdb-k8s ~]# yum -y install kubectl
 [root@gpdb-k8s ~]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -O minikube
@@ -29,14 +29,14 @@ Install kubectl and minikube
 [root@gpdb-k8s ~]# mv minikube docker-machine-driver-kvm2 /usr/local/bin/
 ~~~
 
-Check version of minikube
+### Check version of minikube
 ~~~
 [root@gpdb-k8s ~]# minikube version
 minikube version: v1.7.2
 commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 ~~~
 
-Check version of kubectl
+### Check version of kubectl
 ~~~
 [root@gpdb-k8s ~]# kubectl version -o json
 {
@@ -55,18 +55,18 @@ Check version of kubectl
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
 ~~~
 
-Switch sudo usern
+### Switch sudo user
 ~~~
 [root@gpdb-k8s ~]# sudo su - jomoon
 Last login: Thu Feb 13 11:31:16 KST 2020 on pts/0
 ~~~
 
-Append user into libvirt group in order to use virsh or virt-manager without having to enter a root password
+### Append user into libvirt group in order to use virsh or virt-manager without having to enter a root password
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo usermod --append --groups libvirt $(whoami)
 ~~~
 
-Start minikube
+### Start minikube
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube start --cpus 6 --memory 8192 --vm-driver=kvm2
 😄  minikube v1.7.2 on Centos 7.5.1804
@@ -79,7 +79,7 @@ Start minikube
 🏄  Done! kubectl is now configured to use "minikube"
 ~~~
 
-Check status of minikube
+### Check status of minikube
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube status
 host: Running
@@ -96,8 +96,7 @@ kubeconfig: Configured
 |-------------|------------|--------------|-----|
 ~~~
 
-
-To point shell to minikube's docker-daemon, run:
+### To point shell to minikube's docker-daemon, run:
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube docker-env
 export DOCKER_TLS_VERIFY="1"
@@ -106,7 +105,7 @@ export DOCKER_CERT_PATH="/home/jomoon/.minikube/certs"
 export MINIKUBE_ACTIVE_DOCKERD="minikube"
 ~~~
 
-Check kubernetes cluster info
+### Check kubernetes cluster info
 ~~~
 [jomoon@gpdb-k8s ~]$ kubectl cluster-info
 Kubernetes master is running at https://192.168.39.130:8443
@@ -115,14 +114,14 @@ KubeDNS is running at https://192.168.39.130:8443/api/v1/namespaces/kube-system/
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ~~~
 
-Check kubenetes node info
+### Check kubenetes node info
 ~~~
 [jomoon@gpdb-k8s ~]$ kubectl get nodes
 NAME       STATUS   ROLES    AGE   VERSION
 minikube   Ready    master   71m   v1.17.2
 ~~~
 
-Check if minikube's virtual machine is running
+### Check if minikube's virtual machine is running
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo virsh list --all
  Id    Name                           State
@@ -130,7 +129,7 @@ Check if minikube's virtual machine is running
  1     minikube                       running
 ~~~
 
-Enter minikube's virtual miache via ssh
+### Enter minikube's virtual miache via ssh
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube ssh
                          _             _
@@ -141,13 +140,13 @@ Enter minikube's virtual miache via ssh
 (_) (_) (_)(_)(_) (_)(_)(_) (_)`\___/'(_,__/'`\____)
 ~~~
 
-Check hostname of minikube
+### Check hostname of minikube
 ~~~
 $ hostname
 minikube
 ~~~
 
-Check processes of docker container
+### Check processes of docker container
 ~~~
 $ docker ps
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
@@ -177,12 +176,12 @@ Follow these steps to download and install the Greenplum for Kubernetes containe
 Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
 ~~~
 
-Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
+### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
 ~~~
 $ cd ~/Downloads
 ~~~
 
-Extract greenplum-for-kubernetes
+### Extract greenplum-for-kubernetes
 ~~~
 [jomoon@gpdb-k8s Downloads]$ tar xvzf greenplum-for-kubernetes-v1.11.0.tar.gz
 greenplum-for-kubernetes-v1.11.0/
@@ -216,8 +215,7 @@ greenplum-for-kubernetes-v1.11.0/operator/values.yaml
 greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
 ~~~
 
-
-Go into the new greenplum-for-kubernetes-<version> directory:
+### Go into the new greenplum-for-kubernetes-<version> directory:
 ~~~
 $ cd ./greenplum-for-kubernetes-*
 ~~~
@@ -230,7 +228,7 @@ $ eval $(minikube docker-env)
 Note: To undo this docker setting in the current shell, run eval "$(docker-machine env -u)".
 ~~~
 
-Install epel-release
+### Install epel-release
 ~~~
 [jomoon@gpdb-k8s ~]# sudo yum install epel-release
 Loaded plugins: fastestmirror

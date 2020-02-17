@@ -7,7 +7,7 @@
 [root@gpdb-k8s ~]# systemctl enable libvirtd docker
 ~~~
 
-### Configure Kubernetes yum repository
+#### Configure Kubernetes yum repository
 ~~~
 [root@gpdb-k8s ~]# cat <<'EOF' > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -20,7 +20,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 ~~~
 
-### Install kubectl and minikube
+#### Install kubectl and minikube
 ~~~
 [root@gpdb-k8s ~]# yum -y install kubectl
 [root@gpdb-k8s ~]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -O minikube
@@ -29,14 +29,14 @@ EOF
 [root@gpdb-k8s ~]# mv minikube docker-machine-driver-kvm2 /usr/local/bin/
 ~~~
 
-### Check version of minikube
+#### Check version of minikube
 ~~~
 [root@gpdb-k8s ~]# minikube version
 minikube version: v1.7.2
 commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 ~~~
 
-### Check version of kubectl
+#### Check version of kubectl
 ~~~
 [root@gpdb-k8s ~]# kubectl version -o json
 {
@@ -55,18 +55,18 @@ commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
 ~~~
 
-### Switch sudo user
+#### Switch sudo user
 ~~~
 [root@gpdb-k8s ~]# sudo su - jomoon
 Last login: Thu Feb 13 11:31:16 KST 2020 on pts/0
 ~~~
 
-### Append user into libvirt group in order to use virsh or virt-manager without having to enter a root password
+#### Append user into libvirt group in order to use virsh or virt-manager without having to enter a root password
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo usermod --append --groups libvirt $(whoami)
 ~~~
 
-### Start minikube
+#### Start minikube
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube start --cpus 6 --memory 8192 --vm-driver=kvm2
 😄  minikube v1.7.2 on Centos 7.5.1804
@@ -79,7 +79,7 @@ Last login: Thu Feb 13 11:31:16 KST 2020 on pts/0
 🏄  Done! kubectl is now configured to use "minikube"
 ~~~
 
-### Check status of minikube
+#### Check status of minikube
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube status
 host: Running
@@ -96,7 +96,7 @@ kubeconfig: Configured
 |-------------|------------|--------------|-----|
 ~~~
 
-### To point shell to minikube's docker-daemon, run:
+#### To point shell to minikube's docker-daemon, run:
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube docker-env
 export DOCKER_TLS_VERIFY="1"
@@ -105,7 +105,7 @@ export DOCKER_CERT_PATH="/home/jomoon/.minikube/certs"
 export MINIKUBE_ACTIVE_DOCKERD="minikube"
 ~~~
 
-### Check kubernetes cluster info
+#### Check kubernetes cluster info
 ~~~
 [jomoon@gpdb-k8s ~]$ kubectl cluster-info
 Kubernetes master is running at https://192.168.39.130:8443
@@ -114,14 +114,14 @@ KubeDNS is running at https://192.168.39.130:8443/api/v1/namespaces/kube-system/
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ~~~
 
-### Check kubenetes node info
+#### Check kubenetes node info
 ~~~
 [jomoon@gpdb-k8s ~]$ kubectl get nodes
 NAME       STATUS   ROLES    AGE   VERSION
 minikube   Ready    master   71m   v1.17.2
 ~~~
 
-### Check if minikube's virtual machine is running
+#### Check if minikube's virtual machine is running
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo virsh list --all
  Id    Name                           State
@@ -129,7 +129,7 @@ minikube   Ready    master   71m   v1.17.2
  1     minikube                       running
 ~~~
 
-### Enter minikube's virtual miache via ssh
+#### Enter minikube's virtual miache via ssh
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube ssh
                          _             _
@@ -140,13 +140,13 @@ minikube   Ready    master   71m   v1.17.2
 (_) (_) (_)(_)(_) (_)(_)(_) (_)`\___/'(_,__/'`\____)
 ~~~
 
-### Check hostname of minikube
+#### Check hostname of minikube
 ~~~
 $ hostname
 minikube
 ~~~
 
-### Check processes of docker container
+#### Check processes of docker container
 ~~~
 $ docker ps
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
@@ -170,15 +170,15 @@ $ exit
 logout
 ~~~
 
-### Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
+#### Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
 
 
-### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software.
+#### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software.
 ~~~
 $ cd ~/Downloads
 ~~~
 
-### Extract greenplum-for-kubernetes
+#### Extract greenplum-for-kubernetes
 ~~~
 [jomoon@gpdb-k8s Downloads]$ tar xvzf greenplum-for-kubernetes-v1.11.0.tar.gz
 greenplum-for-kubernetes-v1.11.0/
@@ -192,20 +192,20 @@ greenplum-for-kubernetes-v1.11.0/operator/values.yaml
 greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
 ~~~
 
-### Go into the new greenplum-for-kubernetes-<version> directory:
+#### Go into the new greenplum-for-kubernetes-<version> directory:
 ~~~
 [jomoon@gpdb-k8s Downloads]$ cd ./greenplum-for-kubernetes-*
 ~~~
 
 ~~~
-### Ensure that the local docker daemon interacts with the Minikube docker container registry:
+#### Ensure that the local docker daemon interacts with the Minikube docker container registry:
 ~~~
 $ eval $(minikube docker-env)
 ~~~
 Note: To undo this docker setting in the current shell, run eval "$(docker-machine env -u)".
 
 
-### Load the Greenplum for Kubernetes Docker image to the local Docker registry:
+#### Load the Greenplum for Kubernetes Docker image to the local Docker registry:
 ~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-for-kubernetes
 91d23cf5425a: Loading layer 127.3 MB/127.3 MB
@@ -217,7 +217,7 @@ f36b28e4310d: Loading layer 11.78 kB/11.78 kB
 Loaded image: greenplum-for-kubernetes:v1.11.0
 ~~~
 
-### Load the Greenplum Operator Docker image to the Docker registry:
+#### Load the Greenplum Operator Docker image to the Docker registry:
 ~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker load -i ./images/greenplum-operator
 33c58014b5a4: Loading layer  65.5 MB/65.5 MB
@@ -226,7 +226,7 @@ a1eabe7eb601: Loading layer 40.65 MB/40.65 MB
 Loaded image: greenplum-operator:v1.11.0
 ~~~
 
-### Verify that both Docker images are now available:
+#### Verify that both Docker images are now available:
 ~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ docker images "greenplum-*"
 REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
@@ -234,7 +234,7 @@ greenplum-operator         v1.11.0             852cafa7ac90        7 weeks ago  
 greenplum-for-kubernetes   v1.11.0             3819d17a577a        7 weeks ago         3.05 GB
 ~~~
 
-### Install helm
+#### Install helm
 ~~~
 [jomoon@gpdb-k8s ~]$ curl -L https://git.io/get_helm.sh | bash
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -248,7 +248,7 @@ tiller installed into /usr/local/bin/tiller
 Run 'helm init' to configure helm.
 ~~~
 
-### Initialize helm
+#### Initialize helm
 ~~~
 [jomoon@gpdb-k8s ~]$ helm init
 Creating /home/jomoon/.helm
@@ -270,7 +270,7 @@ To prevent this, run `helm init` with the --tiller-tls-verify flag.
 For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
 ~~~
 
-### Use helm to create a new Greenplum Operator release
+#### Use helm to create a new Greenplum Operator release
 ~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
 NAME: greenplum-operator
@@ -286,13 +286,13 @@ Please see documentation at:
 http://greenplum-kubernetes.docs.pivotal.io/
 ~~~
 
-### If you face the following error while running helm install, download, unpack and install the latest version helm ( currently v3.0.3 )
+#### If you face the following error while running helm install, download, unpack and install the latest version helm ( currently v3.0.3 )
 ~~~
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
 Error: This command needs 1 argument: chart name
 ~~~
 
-### Use watch kubectl get all to monitor the progress of the deployment.
+#### Use watch kubectl get all to monitor the progress of the deployment.
 ~~~
 $ watch kubectl get all
 NAME                                      READY   STATUS    RESTARTS   AGE
@@ -309,7 +309,7 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/greenplum-operator-667ccc59fd   1         1         1       3m22s
 ~~~
 
-### Check the logs of the operator to ensure that it is running properly.
+#### Check the logs of the operator to ensure that it is running properly.
 ~~~
 $ kubectl logs -l app=greenplum-operator
 time="2020-02-13T05:53:29Z" level=info msg="started workers"
@@ -324,7 +324,7 @@ time="2020-02-13T05:53:29Z" level=info msg="started workers"
 2020-02-13T05:53:29.853Z	INFO	controller-runtime.controller	Starting workers	{"controller": "greenplumpxfservice", "worker count": 1}
 ~~~
 
-### Create the StorageClass definition, specifying no-provisioner in order to manually provision local persistent volumes.
+#### Create the StorageClass definition, specifying no-provisioner in order to manually provision local persistent volumes.
 ~~~
 $ vi storage-class.yaml
 ---
@@ -336,13 +336,13 @@ provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 ~~~
 
-### Apply the StorageClass
+#### Apply the StorageClass
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f storage-class.yaml
 storageclass.storage.k8s.io/local-storage created
 ~~~
 
-### Create the PersistentVolumeClaim
+#### Create the PersistentVolumeClaim
 ~~~
 [jomoon@gpdb-k8s workspace]$ vi gpdb-storage-claim.yaml
 ---
@@ -359,12 +359,12 @@ spec:
       storage: 10Gi
 ~~~
 
-### Apply the PersistentVolumeClaim
+#### Apply the PersistentVolumeClaim
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-storage-claim.yaml
 ~~~
 
-### Create a PersistentVolume definition, specifying the local volume and the required NodeAffinity field.
+#### Create a PersistentVolume definition, specifying the local volume and the required NodeAffinity field.
 ~~~
 [jomoon@gpdb-k8s workspace]$ vi gpdb-persistent-storage-for-minikube.yaml
 ---
@@ -461,7 +461,7 @@ spec:
           - minikube
 ~~~
 
-### Apply the PersistentVolume
+#### Apply the PersistentVolume
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-persistent-storage-for-minikube.yaml
 persistentvolume/greenplum-local-pv-master-0 created
@@ -471,7 +471,7 @@ persistentvolume/greenplum-local-pv-segment-b-0 created
 ~~~
 
 
-
+#### Create local persistent volume on minikube virtual machine
 ~~~
 [jomoon@gpdb-k8s workspace]$ minikube ssh
                          _             _
@@ -489,7 +489,7 @@ $ exit
 logout
 ~~~
 
-
+#### Create a Kubernetes manifest file to specify the configuration of your Greenplum cluster.
 ~~~
 [jomoon@gpdb-k8s workspace]$ vi gpdb-instances.yaml
 apiVersion: "greenplum.pivotal.io/v1"
@@ -517,12 +517,12 @@ spec:
     mirros: yes
 ~~~
 
-
+#### Use kubectl apply command and specify your manifest file to send the deployment request to the Greenplum Operator
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-instances.yaml
 ~~~
 
-
+#### Check the cluster is initializing the status will be Running:
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl get all
 NAME                                      READY   STATUS    RESTARTS   AGE
@@ -553,8 +553,7 @@ NAME                                                 STATUS    AGE
 greenplumcluster.greenplum.pivotal.io/my-greenplum   Pending   30s
 ~~~
 
-
-
+#### Describe your Greenplum cluster to verify that it was created successfully
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl describe greenplumClusters/my-greenplum
 Name:         my-greenplum
@@ -598,11 +597,13 @@ Status:
 Events:              <none>
 ~~~
 
-
-
+#### Access the Greenplum instance running on the master-o in Kubernetes
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl exec -it master-0 bash
+~~~
 
+#### Start GPDB
+~~~
 gpadmin@master-0:~$ source /opt/gpdb/greenplum_path.sh
 gpadmin@master-0:~$ gpstart
 20200214:01:42:28:001434 gpstart:master-0:gpadmin-[INFO]:-Starting gpstart with args:
@@ -653,12 +654,14 @@ Continue with Greenplum instance startup Yy|Nn (default=N):
 20200214:01:42:35:001434 gpstart:master-0:gpadmin-[INFO]:-Checking if standby master is running on host: master-1.agent.default.svc.cluster.local  in directory: /greenplum/data-1
 20200214:01:42:39:001434 gpstart:master-0:gpadmin-[WARNING]:-Number of segments not attempted to start: 1
 20200214:01:42:39:001434 gpstart:master-0:gpadmin-[INFO]:-Check status of database with gpstate utility
+~~~
+
+#### Check configuration of segments
+~~~
 gpadmin@master-0:~$ psql
 psql (8.3.23)
 Type "help" for help.
 
-gpadmin=#
-gpadmin=#
 gpadmin=# select * from gp_segment_configuration;
  dbid | content | role | preferred_role | mode | status | port  |                 hostname                 |                   address                   | replication_port
 ------+---------+------+----------------+------+--------+-------+------------------------------------------+---------------------------------------------+------------------
@@ -668,4 +671,3 @@ gpadmin=# select * from gp_segment_configuration;
     3 |       0 | p    | m              | c    | u      | 50000 | segment-b-0                              | segment-b-0.agent.default.svc.cluster.local |             6001
 (4 rows)
 ~~~
-

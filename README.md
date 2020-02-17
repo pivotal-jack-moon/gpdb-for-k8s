@@ -34,6 +34,8 @@ EOF
 minikube version: v1.7.2
 commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 ~~~
+
+
 ~~~
 [root@gpdb-k8s ~]# kubectl version -o json
 {
@@ -50,6 +52,8 @@ commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
   }
 }
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
+~~~
+
 
 ~~~
 [root@gpdb-k8s ~]# sudo su - jomoon
@@ -78,37 +82,16 @@ error: authentication unavailable: no polkit agent available to authenticate act
 ~~~
 
 
---------------
 Users who admin their own machines often want to be able to use tools like virt-manager without having to enter a root password. Just google 'virt-manager without password' and see all the hits. I've seen many blogs and articles over the years describing various ways to work around it.
-
 The password prompting is via libvirt's polkit integration. The idea is that we want applications like virt-manager to run as a regular unprivileged user (running GUI apps as root is considered a security no-no), and only use the root authentication for talking to the system libvirtd instance. Most workarounds suggest installing a polkit rule to allow your user, or a particular user group, to access libvirt without needing to enter the root password.
-
 In libvirt v1.2.16 we finally added official support for this (and backported to Fedora22+). The group is predictably called libvirt. This matches polkit rules that debian and suse were already shipping too.
-
 So just add your user to the libvirt group and enjoy passwordless virt-manager usage:
-
---------------
 
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo usermod --append --groups libvirt $(whoami)
 ~~~
 
 ~~~
-[jomoon@gpdb-k8s ~]$ minikube start --vm-driver kvm2
-😄  minikube v1.7.2 on Centos 7.5.1804
-✨  Using the kvm2 driver based on user configuration
-⌛  Reconfiguring existing host ...
-
-💣  Unable to start VM. Please investigate and run 'minikube delete' if possible
-❌  Error: [KVM2_NO_DOMAIN] Error getting state for host: getting connection: looking up domain: virError(Code=42, Domain=10, Message='Domain not found: no domain with matching name 'minikube'')
-💡  Suggestion: The VM that minikube is configured for no longer exists. Run 'minikube delete'
-⁉️   Related issues:
-    ▪ https://github.com/kubernetes/minikube/issues/3636
-[jomoon@gpdb-k8s ~]$ minikube delete
-⚠️  Unable to get the status of the minikube cluster.
-🔥  Removing /home/jomoon/.minikube/machines/minikube ...
-💀  Removed all traces of the "minikube" cluster.
-
 [jomoon@gpdb-k8s ~]$ minikube start --cpus 6 --memory 8192 --vm-driver=kvm2
 😄  minikube v1.7.2 on Centos 7.5.1804
 ✨  Using the kvm2 driver based on user configuration
@@ -119,6 +102,7 @@ So just add your user to the libvirt group and enjoy passwordless virt-manager u
 ⌛  Waiting for cluster to come online ...
 🏄  Done! kubectl is now configured to use "minikube"
 ~~~
+
 
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube status
@@ -136,6 +120,8 @@ kubeconfig: Configured
 |-------------|------------|--------------|-----|
 ~~~
 
+
+# To point your shell to minikube's docker-daemon, run:
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube docker-env
 export DOCKER_TLS_VERIFY="1"
@@ -144,8 +130,8 @@ export DOCKER_CERT_PATH="/home/jomoon/.minikube/certs"
 export MINIKUBE_ACTIVE_DOCKERD="minikube"
 ~~~
 
-# To point your shell to minikube's docker-daemon, run:
-# eval $(minikube -p minikube docker-env)
+
+~~~
 [jomoon@gpdb-k8s ~]$ kubectl cluster-info
 Kubernetes master is running at https://192.168.39.130:8443
 KubeDNS is running at https://192.168.39.130:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
@@ -157,12 +143,14 @@ NAME       STATUS   ROLES    AGE   VERSION
 minikube   Ready    master   71m   v1.17.2
 ~~~
 
+
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo virsh list --all
  Id    Name                           State
 ----------------------------------------------------
  1     minikube                       running
 ~~~
+
 
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube ssh
@@ -202,7 +190,10 @@ logout
 Follow these steps to download and install the Greenplum for Kubernetes container images, and install the Greenplum Operator resource.
 Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
 Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
+
+~~~
 $ cd ~/Downloads
+~~~
 
 
 ~~~
@@ -240,16 +231,18 @@ greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
 
 
 
-Go into the new greenplum-for-kubernetes-<version> directory:
+# Go into the new greenplum-for-kubernetes-<version> directory:
 ~~~
 $ cd ./greenplum-for-kubernetes-*
 ~~~
 
 
+~~~
 (This step is for Minikube deployments only.) Ensure that the local docker daemon interacts with the Minikube docker container registry:
 
 $ eval $(minikube docker-env)
 Note: To undo this docker setting in the current shell, run eval "$(docker-machine env -u)".
+~~~
 
 
 ~~~
@@ -305,11 +298,12 @@ Complete!
 ~~~
 
 
+~~~
 [jomoon@gpdb-k8s ~]# sudo yum install docker
+~~~
 
 
-
-
+~~~
 [jomoon@gpdb-k8s ~]$ curl -L https://git.io/get_helm.sh | bash
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -320,8 +314,10 @@ Preparing to install helm and tiller into /usr/local/bin
 helm installed into /usr/local/bin/helm
 tiller installed into /usr/local/bin/tiller
 Run 'helm init' to configure helm.
+~~~
 
 
+~~~
 [jomoon@gpdb-k8s ~]$ helm init
 Creating /home/jomoon/.helm
 Creating /home/jomoon/.helm/repository
@@ -340,7 +336,7 @@ Tiller (the Helm server-side component) has been installed into your Kubernetes 
 Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
 To prevent this, run `helm init` with the --tiller-tls-verify flag.
 For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
-
+~~~
 
 
 
@@ -394,18 +390,12 @@ greenplum-for-kubernetes   v1.11.0             3819d17a577a        7 weeks ago  
 ~~~
 
 
+
 ~~~
-[jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
--bash: helm: command not found
-
-
-
-
 [jomoon@gpdb-k8s greenplum-for-kubernetes-v1.11.0]$ helm install greenplum-operator operator/
 Error: This command needs 1 argument: chart name
 --> helm 3.0.3 버전 업그레이드 이후에 해결됨
-
-
+~~~
 
 
 
@@ -656,6 +646,7 @@ spec:
     mirros: yes
 ~~~
 
+
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl apply -f gpdb-instances.yaml
 ~~~
@@ -690,6 +681,8 @@ statefulset.apps/segment-b   1/1     25s
 NAME                                                 STATUS    AGE
 greenplumcluster.greenplum.pivotal.io/my-greenplum   Pending   30s
 ~~~
+
+
 
 ~~~
 [jomoon@gpdb-k8s workspace]$ kubectl describe greenplumClusters/my-greenplum

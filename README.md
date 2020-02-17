@@ -1,12 +1,13 @@
 # How to install and configure greenplum for kubenetest onto minikube in CentOS 7.x
 
+Insgtall KVM Hypervisor supported and docker for minikube
 ~~~
-[root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm
-[root@gpdb-k8s ~]# systemctl start libvirtd
-[root@gpdb-k8s ~]# systemctl enable libvirtd
+[root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm docker
+[root@gpdb-k8s ~]# systemctl start libvirtd docker
+[root@gpdb-k8s ~]# systemctl enable libvirtd docker
 ~~~
 
-
+Configure Kubernetes yum repository
 ~~~
 [root@gpdb-k8s ~]# cat <<'EOF' > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -19,7 +20,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 ~~~
 
-
+Install kubectl and minikube
 ~~~
 [root@gpdb-k8s ~]# yum -y install kubectl
 [root@gpdb-k8s ~]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -O minikube
@@ -28,14 +29,14 @@ EOF
 [root@gpdb-k8s ~]# mv minikube docker-machine-driver-kvm2 /usr/local/bin/
 ~~~
 
-
+Check version of minikube
 ~~~
 [root@gpdb-k8s ~]# minikube version
 minikube version: v1.7.2
 commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 ~~~
 
-
+Check version of kubectl
 ~~~
 [root@gpdb-k8s ~]# kubectl version -o json
 {
@@ -54,43 +55,18 @@ commit: 50d543b5fcb0e1c0d7c27b1398a9a9790df09dfb
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
 ~~~
 
-
+Switch sudo usern
 ~~~
 [root@gpdb-k8s ~]# sudo su - jomoon
 Last login: Thu Feb 13 11:31:16 KST 2020 on pts/0
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$
-[jomoon@gpdb-k8s ~]$ minikube start --vm-driver kvm2
-😄  minikube v1.7.2 on Centos 7.5.1804
-✨  Using the kvm2 driver based on user configuration
-
-⚠️  'kvm2' driver reported an issue: /bin/virsh domcapabilities --virttype kvm failed:
-error: failed to connect to the hypervisor
-error: authentication unavailable: no polkit agent available to authenticate action 'org.libvirt.unix.manage'
-💡  Suggestion: Follow your Linux distribution instructions for configuring KVM
-📘  Documentation: https://minikube.sigs.k8s.io/docs/reference/drivers/kvm2/
-
-💿  Downloading VM boot image ...
-    > minikube-v1.7.0.iso.sha256: 65 B / 65 B [\--------------] 100.00% ? p/s 0s
-    > minikube-v1.7.0.iso: 166.68 MiB / 166.68 MiB [-] 100.00% 3.71 MiB p/s 45s
-🔥  Creating kvm2 VM (CPUs=2, Memory=2000MB, Disk=20000MB) ...
-
-💣  Unable to start VM. Please investigate and run 'minikube delete' if possible
-❌  Error: [KVM_CONNECTION_ERROR] create: Error creating machine: Error in driver during machine creation: creating network: getting libvirt connection: error connecting to libvirt socket.: virError(Code=94, Domain=60, Message='authentication unavailable: no polkit agent available to authenticate action 'org.libvirt.unix.manage'')
-💡  Suggestion: Have you set up libvirt correctly?
-📘  Documentation: https://minikube.sigs.k8s.io/docs/reference/drivers/kvm2/
 ~~~
 
-
-Users who admin their own machines often want to be able to use tools like virt-manager without having to enter a root password. Just google 'virt-manager without password' and see all the hits. I've seen many blogs and articles over the years describing various ways to work around it.
-The password prompting is via libvirt's polkit integration. The idea is that we want applications like virt-manager to run as a regular unprivileged user (running GUI apps as root is considered a security no-no), and only use the root authentication for talking to the system libvirtd instance. Most workarounds suggest installing a polkit rule to allow your user, or a particular user group, to access libvirt without needing to enter the root password.
-In libvirt v1.2.16 we finally added official support for this (and backported to Fedora22+). The group is predictably called libvirt. This matches polkit rules that debian and suse were already shipping too.
-So just add your user to the libvirt group and enjoy passwordless virt-manager usage:
-
+Append user into libvirt group in order to use virsh or virt-manager without having to enter a root password
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo usermod --append --groups libvirt $(whoami)
 ~~~
 
+Start minikube
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube start --cpus 6 --memory 8192 --vm-driver=kvm2
 😄  minikube v1.7.2 on Centos 7.5.1804
@@ -103,7 +79,7 @@ So just add your user to the libvirt group and enjoy passwordless virt-manager u
 🏄  Done! kubectl is now configured to use "minikube"
 ~~~
 
-
+Check status of minikube
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube status
 host: Running
@@ -121,7 +97,7 @@ kubeconfig: Configured
 ~~~
 
 
-# To point your shell to minikube's docker-daemon, run:
+To point shell to minikube's docker-daemon, run:
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube docker-env
 export DOCKER_TLS_VERIFY="1"
@@ -130,7 +106,7 @@ export DOCKER_CERT_PATH="/home/jomoon/.minikube/certs"
 export MINIKUBE_ACTIVE_DOCKERD="minikube"
 ~~~
 
-
+Check kubernetes cluster info
 ~~~
 [jomoon@gpdb-k8s ~]$ kubectl cluster-info
 Kubernetes master is running at https://192.168.39.130:8443
@@ -139,13 +115,14 @@ KubeDNS is running at https://192.168.39.130:8443/api/v1/namespaces/kube-system/
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ~~~
 
+Check kubenetes node info
 ~~~
 [jomoon@gpdb-k8s ~]$ kubectl get nodes
 NAME       STATUS   ROLES    AGE   VERSION
 minikube   Ready    master   71m   v1.17.2
 ~~~
 
-
+Check if minikube's virtual machine is running
 ~~~
 [jomoon@gpdb-k8s ~]$ sudo virsh list --all
  Id    Name                           State
@@ -153,12 +130,9 @@ minikube   Ready    master   71m   v1.17.2
  1     minikube                       running
 ~~~
 
-
+Enter minikube's virtual miache via ssh
 ~~~
 [jomoon@gpdb-k8s ~]$ minikube ssh
-~~~
-
-~~~
                          _             _
             _         _ ( )           ( )
   ___ ___  (_)  ___  (_)| |/')  _   _ | |_      __
@@ -167,9 +141,14 @@ minikube   Ready    master   71m   v1.17.2
 (_) (_) (_)(_)(_) (_)(_)(_) (_)`\___/'(_,__/'`\____)
 ~~~
 
+Check hostname of minikube
 ~~~
 $ hostname
 minikube
+~~~
+
+Check processes of docker container
+~~~
 $ docker ps
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
 f6da8974b3f4        4689081edb10           "/storage-provisioner"   About an hour ago   Up About an hour                        k8s_storage-provisioner_storage-provisioner_kube-system_66f00996-8cef-4379-96ab-4f263be8bbd5_1
@@ -193,16 +172,17 @@ logout
 ~~~
 
 
-
+~~~
 Follow these steps to download and install the Greenplum for Kubernetes container images, and install the Greenplum Operator resource.
 Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
-Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
+~~~
 
+Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:
 ~~~
 $ cd ~/Downloads
 ~~~
 
-
+Extract greenplum-for-kubernetes
 ~~~
 [jomoon@gpdb-k8s Downloads]$ tar xvzf greenplum-for-kubernetes-v1.11.0.tar.gz
 greenplum-for-kubernetes-v1.11.0/
@@ -237,8 +217,7 @@ greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
 ~~~
 
 
-
-# Go into the new greenplum-for-kubernetes-<version> directory:
+Go into the new greenplum-for-kubernetes-<version> directory:
 ~~~
 $ cd ./greenplum-for-kubernetes-*
 ~~~
@@ -251,7 +230,7 @@ $ eval $(minikube docker-env)
 Note: To undo this docker setting in the current shell, run eval "$(docker-machine env -u)".
 ~~~
 
-
+Install epel-release
 ~~~
 [jomoon@gpdb-k8s ~]# sudo yum install epel-release
 Loaded plugins: fastestmirror
@@ -304,10 +283,6 @@ Updated:
 Complete!
 ~~~
 
-
-~~~
-[jomoon@gpdb-k8s ~]# sudo yum install docker
-~~~
 
 
 ~~~

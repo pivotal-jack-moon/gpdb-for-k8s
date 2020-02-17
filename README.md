@@ -197,7 +197,6 @@ greenplum-for-kubernetes-v1.11.0/operator/Chart.yaml
 [jomoon@gpdb-k8s Downloads]$ cd ./greenplum-for-kubernetes-*
 ~~~
 
-~~~
 #### Ensure that the local docker daemon interacts with the Minikube docker container registry:
 ~~~
 $ eval $(minikube docker-env)
@@ -469,7 +468,6 @@ persistentvolume/greenplum-local-pv-master-1 created
 persistentvolume/greenplum-local-pv-segment-a-0 created
 persistentvolume/greenplum-local-pv-segment-b-0 created
 ~~~
-
 
 #### Create local persistent volume on minikube virtual machine
 ~~~

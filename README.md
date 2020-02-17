@@ -1,6 +1,6 @@
 ## How to install and configure GPDB for kubenetes onto minikube in CentOS 7.x
 
-Insgtall KVM Hypervisor supported and docker for minikube
+### Insgtall KVM Hypervisor supported and docker for minikube
 ~~~
 [root@gpdb-k8s ~]# yum -y install qemu-kvm libvirt libvirt-daemon-kvm docker
 [root@gpdb-k8s ~]# systemctl start libvirtd docker

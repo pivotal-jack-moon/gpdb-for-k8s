@@ -170,7 +170,7 @@ $ exit
 logout
 ~~~
 
-# Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
+### Download the Greenplum for Kubernetes software from Pivotal Network. The download file has the name: greenplum-for-kubernetes-<version>.tar.gz.
 
 
 ### Go to the directory where you downloaded Greenplum for Kubernetes, and unpack the downloaded software. For example:

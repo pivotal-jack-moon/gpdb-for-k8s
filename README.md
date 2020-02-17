@@ -1,4 +1,4 @@
-# How to install and configure greenplum for kubenetest onto minikube in CentOS 7.x
+## How to install and configure greenplum for kubenetest onto minikube in CentOS 7.x
 
 Insgtall KVM Hypervisor supported and docker for minikube
 ~~~

@@ -1,4 +1,4 @@
-## How to install and configure greenplum for kubenetest onto minikube in CentOS 7.x
+## How to install and configure GPDB for kubenetes onto minikube in CentOS 7.x
 
 Insgtall KVM Hypervisor supported and docker for minikube
 ~~~
@@ -7,7 +7,7 @@ Insgtall KVM Hypervisor supported and docker for minikube
 [root@gpdb-k8s ~]# systemctl enable libvirtd docker
 ~~~
 
-Configure Kubernetes yum repository
+### Configure Kubernetes yum repository
 ~~~
 [root@gpdb-k8s ~]# cat <<'EOF' > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
